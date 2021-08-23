@@ -6,33 +6,14 @@ const {
     GraphQLBoolean,
     GraphQLSchema,
     GraphQLList,
+    GraphQLNonNull,
 } = graphql;
 
+const Job = require("../models/Job");
+const JobSeeker = require("../models/JobSeeker");
+const Employer = require("../models/Employer");
+
 const _ = require("lodash");
-
-const jobSeekers = [
-    { id: "1", email: "test@gmail.com", password: "test" },
-    { id: "2", email: "test1@gmail.com", password: "test" },
-    { id: "3", email: "test2@gmail.com", password: "test" },
-];
-
-const employers = [
-    { id: "1", email: "test4@gmail.com", password: "test" },
-    { id: "2", email: "test5@gmail.com", password: "test" },
-    { id: "3", email: "test6@gmail.com", password: "test" },
-];
-
-const jobs = [
-    { id: "1", title: "Full Stack Developer", employerId: "1" },
-    { id: "2", title: "MERN Stack Developer", employerId: "1" },
-    { id: "3", title: "MEAN Stack Developer", employerId: "3" },
-];
-
-const Experiences = [
-    { id: "1", jobSeekerId: "1", title: "Backend Developer" },
-    { id: "2", jobSeekerId: "1", title: "Backend Developer" },
-    { id: "3", jobSeekerId: "1", title: "Backend Developer" },
-];
 
 const JobType = new GraphQLObjectType({
     name: "Job",
@@ -42,20 +23,19 @@ const JobType = new GraphQLObjectType({
         company: { type: GraphQLString },
         location: { type: GraphQLString },
         remote: { type: GraphQLBoolean },
-        postTime: { type: GraphQLString },
         jobType: { type: GraphQLString },
+        experience: { type: GraphQLString },
         seniorityLevel: { type: GraphQLString },
         aboutCompany: { type: GraphQLString },
         jobDescription: { type: GraphQLString },
         responsibilities: { type: GraphQLString },
         requirements: { type: GraphQLString },
-        contactPerson: { type: GraphQLString },
         salary: { type: GraphQLString },
         facilities: { type: GraphQLString },
         employer: {
             type: EmployerType,
             resolve(parent, args) {
-                return _.find(employers, { id: parent.employerId });
+                return Employer.findById(parent.employerId);
             },
         },
     }),
@@ -73,8 +53,13 @@ const JobSeekerType = new GraphQLObjectType({
         image: { type: GraphQLString },
         location: { type: GraphQLString },
         summary: { type: GraphQLString },
-        experience: { type: GraphQLString },
-        skills: { type: GraphQLString },
+        experience: {
+            type: new GraphQLList(ExperienceType),
+            resolve(parent, args) {
+                return Experience.find({ jobSeekerId: parent.id });
+            },
+        },
+        skills: { type: GraphQLList(GraphQLString) },
     }),
 });
 
@@ -90,7 +75,7 @@ const ExperienceType = new GraphQLObjectType({
         jobSeeker: {
             type: JobSeekerType,
             resolve(parent, args) {
-                return _.find(jobSeekers, { id: parent.jobSeekerId });
+                return JobSeeker.findOne({ jobSeekerId: parent.jobSeekerId });
             },
         },
         description: { type: GraphQLString },
@@ -108,7 +93,7 @@ const EmployerType = new GraphQLObjectType({
         jobs: {
             type: new GraphQLList(JobType),
             resolve(parent, args) {
-                return _.filter(jobs, { employerId: parent.id });
+                return Jobs.find({ employerId: parent.id });
             },
         },
     }),
@@ -125,10 +110,9 @@ const RootQuery = new GraphQLObjectType({
             },
             resolve(parent, args) {
                 // get data from DB
-                return _.find(jobSeekers, function (o) {
-                    return (
-                        o.email === args.email && o.password === args.password
-                    );
+                return JobSeeker.findOne({
+                    email: args.email,
+                    password: args.password,
                 });
             },
         },
@@ -140,10 +124,9 @@ const RootQuery = new GraphQLObjectType({
             },
             resolve(parent, args) {
                 // get data from DB
-                return _.find(employers, function (o) {
-                    return (
-                        o.email === args.email && o.password === args.password
-                    );
+                return Employer.findOne({
+                    email: args.email,
+                    password: args.password,
                 });
             },
         },
@@ -154,26 +137,112 @@ const RootQuery = new GraphQLObjectType({
             },
             resolve(parent, args) {
                 // get data from DB
-                return _.find(jobs, function (o) {
-                    return o.id === args.id;
-                });
+                return Job.findById(args.id);
             },
         },
         jobs: {
             type: new GraphQLList(JobType),
             resolve(parent, args) {
-                return jobs;
+                return Job.find({});
             },
         },
         jobSeekers: {
             type: new GraphQLList(JobSeekerType),
             resolve(parent, args) {
-                return jobSeekers;
+                return JobSeeker.find({});
             },
+        },
+    },
+});
+
+const Mutation = new GraphQLObjectType({
+    name: "Mutation",
+    fields: {
+        addJob: {
+            type: JobType,
+            args: {
+                title: { type: new GraphQLNonNull(GraphQLString) },
+                company: { type: new GraphQLNonNull(GraphQLString) },
+                location: { type: new GraphQLNonNull(GraphQLString) },
+                remote: { type: new GraphQLNonNull(GraphQLString) },
+                jobType: { type: new GraphQLNonNull(GraphQLString) },
+                experience: { type: new GraphQLNonNull(GraphQLString) },
+                seniorityLevel: { type: new GraphQLNonNull(GraphQLString) },
+                aboutCompany: { type: new GraphQLNonNull(GraphQLString) },
+                jobDescription: { type: new GraphQLNonNull(GraphQLString) },
+                responsibilities: { type: GraphQLString },
+                requirements: { type: GraphQLString },
+                salary: { type: new GraphQLNonNull(GraphQLString) },
+                facilities: { type: GraphQLString },
+                employerId: { type: new GraphQLNonNull(GraphQLString) },
+            },
+            resolve(parent, args) {
+                let job = new Job({
+                    title: args.title,
+                    company: args.company,
+                    location: args.location,
+                    remote: args.remote,
+                    jobType: args.jobType,
+                    experience: args.experience,
+                    seniorityLevel: args.seniorityLevel,
+                    aboutCompany: args.aboutCompany,
+                    jobDescription: args.jobDescription,
+                    responsibilities: args.responsibilities,
+                    requirements: args.requirements,
+                    salary: args.salary,
+                    facilities: args.facilities,
+                    employerId: args.employerId,
+                });
+
+                return job.save();
+            },
+        },
+        addJobSeeker: {
+            type: JobSeekerType,
+            args: {
+                name: { type: new GraphQLNonNull(GraphQLString) },
+                title: { type: new GraphQLNonNull(GraphQLString) },
+                email: { type: new GraphQLNonNull(GraphQLString) },
+                password: { type: new GraphQLNonNull(GraphQLString) },
+                phone: { type: GraphQLString },
+                image: { type: new GraphQLNonNull(GraphQLString) },
+                location: { type: new GraphQLNonNull(GraphQLString) },
+                summary: { type: new GraphQLNonNull(GraphQLString) },
+                experience: { type: GraphQLList(GraphQLString) },
+                skills: {
+                    type: new GraphQLNonNull(GraphQLList(GraphQLString)),
+                },
+            },
+            resolve(parent, args) {
+                let jobSeeker = new JobSeeker({
+                    name: args.name,
+                    title: args.title,
+                    email: args.email,
+                    password: args.password,
+                    phone: args.phone,
+                    image: args.image,
+                    location: args.location,
+                    summary: args.summary,
+                    experience: args.experience,
+                    skills: args.skills,
+                });
+                return jobSeeker.save();
+            },
+        },
+        addEmployer: {
+            type: EmployerType,
+            args: {
+                name: { type: new GraphQLNonNull(GraphQLString) },
+                email: { type: new GraphQLNonNull(GraphQLString) },
+                password: { type: new GraphQLNonNull(GraphQLString) },
+                phone: { type: new GraphQLNonNull(GraphQLString) },
+            },
+            resolve(parent, args) {},
         },
     },
 });
 
 module.exports = new graphql.GraphQLSchema({
     query: RootQuery,
+    mutation: Mutation,
 });

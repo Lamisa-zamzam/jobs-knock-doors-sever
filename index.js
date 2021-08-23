@@ -10,11 +10,11 @@ const schema = require("./schema/schema");
 const connectDB = async () => {
     try {
         await mongoose.connect(
-            "mongodb+srv://binaryHook10:LfVQfkn0TGmdZbwx@cluster0.uabc2.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+            "mongodb+srv://knockDoors:MdMujFZz06Cf4lJO@cluster0.hwuiv.mongodb.net/jobs-knock-doors?retryWrites=true&w=majority",
             {
                 auth: { authSource: "admin" },
-                user: "binaryHook10",
-                pass: "LfVQfkn0TGmdZbwx",
+                user: "knockDoors",
+                pass: "MdMujFZz06Cf4lJO",
                 useNewUrlParser: true,
                 useCreateIndex: true,
                 useUnifiedTopology: true,
@@ -22,10 +22,13 @@ const connectDB = async () => {
             }
         );
     } catch (err) {
-        console.log(error);
+        console.log(err);
     }
-    console.log("MongoDB connected");
 };
+
+mongoose.connection.once("open", () => {
+    console.log("MongoDB connected");
+});
 
 // Connect DB
 connectDB();
