@@ -7,6 +7,10 @@ const mongoose = require("mongoose");
 const { graphqlHTTP } = require("express-graphql");
 const schema = require("./schema/schema");
 
+const app = express();
+
+app.use(cors());
+
 const connectDB = async () => {
     try {
         await mongoose.connect(
@@ -32,10 +36,6 @@ mongoose.connection.once("open", () => {
 
 // Connect DB
 connectDB();
-
-const app = express();
-
-app.use(cors());
 
 // for parsing the req.body
 app.use(express.json());

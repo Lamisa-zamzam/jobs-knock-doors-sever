@@ -206,13 +206,13 @@ const Mutation = new GraphQLObjectType({
                 email: { type: new GraphQLNonNull(GraphQLString) },
                 password: { type: new GraphQLNonNull(GraphQLString) },
                 phone: { type: GraphQLString },
-                image: { type: new GraphQLNonNull(GraphQLString) },
-                location: { type: new GraphQLNonNull(GraphQLString) },
-                summary: { type: new GraphQLNonNull(GraphQLString) },
-                experience: { type: GraphQLList(GraphQLString) },
-                skills: {
-                    type: new GraphQLNonNull(GraphQLList(GraphQLString)),
-                },
+                // image: { type: GraphQLString },
+                // location: { type: GraphQLString },
+                // summary: { type: GraphQLString },
+                // experience: { type: GraphQLList(GraphQLString) },
+                // skills: {
+                //     type: GraphQLList(GraphQLString),
+                // },
             },
             resolve(parent, args) {
                 let jobSeeker = new JobSeeker({
@@ -221,11 +221,11 @@ const Mutation = new GraphQLObjectType({
                     email: args.email,
                     password: args.password,
                     phone: args.phone,
-                    image: args.image,
-                    location: args.location,
-                    summary: args.summary,
-                    experience: args.experience,
-                    skills: args.skills,
+                    // image: args.image,
+                    // location: args.location,
+                    // summary: args.summary,
+                    // experience: args.experience,
+                    // skills: args.skills,
                 });
                 return jobSeeker.save();
             },
@@ -238,7 +238,17 @@ const Mutation = new GraphQLObjectType({
                 password: { type: new GraphQLNonNull(GraphQLString) },
                 phone: { type: new GraphQLNonNull(GraphQLString) },
             },
-            resolve(parent, args) {},
+            resolve(parent, args) {
+                console.log(parent);
+                let employer = new Employer({
+                    name: args.name,
+                    email: args.email,
+                    password: args.password,
+                    phone: args.phone,
+                });
+
+                return employer.save();
+            },
         },
     },
 });
