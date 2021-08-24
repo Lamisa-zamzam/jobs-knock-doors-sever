@@ -14,11 +14,11 @@ app.use(cors());
 const connectDB = async () => {
     try {
         await mongoose.connect(
-            "mongodb+srv://knockDoors:MdMujFZz06Cf4lJO@cluster0.hwuiv.mongodb.net/jobs-knock-doors?retryWrites=true&w=majority",
+            `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.hwuiv.mongodb.net/jobs-knock-doors?retryWrites=true&w=majority`,
             {
                 auth: { authSource: "admin" },
-                user: "knockDoors",
-                pass: "MdMujFZz06Cf4lJO",
+                user: process.env.DB_USER,
+                pass: process.env.DB_PASS,
                 useNewUrlParser: true,
                 useCreateIndex: true,
                 useUnifiedTopology: true,
