@@ -7,6 +7,7 @@ const {
     GraphQLSchema,
     GraphQLList,
     GraphQLNonNull,
+    GraphQLID,
 } = graphql;
 
 const Job = require("../models/Job");
@@ -133,7 +134,7 @@ const RootQuery = new GraphQLObjectType({
         job: {
             type: JobType,
             args: {
-                id: { type: GraphQLString },
+                id: { type: GraphQLID },
             },
             resolve(parent, args) {
                 // get data from DB
