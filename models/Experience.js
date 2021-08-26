@@ -3,14 +3,14 @@ const Schema = mongoose.Schema;
 
 const ObjectId = mongoose.Types.ObjectId;
 
-const jobSeekerSchema = new Schema({
+const ExperienceSchema = new Schema({
     title: String,
     company: String,
     location: String,
     jobType: String,
     date: String,
-    jobSeekerId: ObjectId,
+    ExperienceId: ObjectId,
     description: String,
 });
 
-module.exports = mongoose.model("JobSeeker", jobSeekerSchema);
+module.exports = mongoose.model("Experience", ExperienceSchema);
