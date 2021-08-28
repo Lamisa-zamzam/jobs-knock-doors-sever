@@ -43,6 +43,10 @@ const connectDB = async () => {
 // Connect DB
 connectDB();
 
+mongoose.connection.once("open", () => {
+    console.log("MongDB Connected");
+});
+
 // for parsing the req.body
 app.use(express.json());
 

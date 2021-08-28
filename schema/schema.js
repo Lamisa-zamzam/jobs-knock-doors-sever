@@ -181,17 +181,17 @@ const RootQuery = new GraphQLObjectType({
                 });
             },
         },
-        employeeSearch: {
+        jobSeekerSearch: {
             type: new GraphQLList(JobSeekerType),
             args: {
-                employeeName: { type: GraphQLString },
-                employeeTitle: { type: GraphQLString },
+                jobSeekerName: { type: GraphQLString },
+                jobSeekerTitle: { type: GraphQLString },
             },
             resolve(parent, args) {
                 // get data from DB
                 return JobSeeker.find({
-                    name: new RegExp(args.employeeName, "i"),
-                    title: new RegExp(args.employeeTitle, "i"),
+                    name: new RegExp(args.jobSeekerName, "i"),
+                    title: new RegExp(args.jobSeekerTitle, "i"),
                 });
             },
         },
