@@ -8,9 +8,6 @@ const cors = require("cors");
 // Mongoose
 const mongoose = require("mongoose");
 
-// Custom error handler
-const errorHandler = require("./middleware/error");
-
 // GraphQL
 const { graphqlHTTP } = require("express-graphql");
 // GraphQL Schema
@@ -62,9 +59,6 @@ app.use(
 app.get("/", (req, res) => {
     res.send("Hello World!");
 });
-
-// Error Handle
-app.use(errorHandler);
 
 // Server
 const server = app.listen(process.env.PORT || 5000, () => {
