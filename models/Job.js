@@ -1,6 +1,8 @@
+// Dependencies
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+// Schema for a job
 const jobSchema = new Schema({
     title: String,
     company: String,
@@ -18,4 +20,5 @@ const jobSchema = new Schema({
     employerId: String,
 });
 
+// Export Job model
 module.exports = mongoose.model("Job", jobSchema);

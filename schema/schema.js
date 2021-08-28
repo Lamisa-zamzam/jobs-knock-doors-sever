@@ -1,5 +1,6 @@
+// GraphQL
 const graphql = require("graphql");
-
+// GraphQL Types
 const {
     GraphQLObjectType,
     GraphQLString,
@@ -10,13 +11,14 @@ const {
     GraphQLID,
 } = graphql;
 
+// Mongoose Models
 const Job = require("../models/Job");
 const JobSeeker = require("../models/JobSeeker");
 const Employer = require("../models/Employer");
 const Experience = require("../models/Experience");
 
-const _ = require("lodash");
-
+// Graphql Types
+// Type for a job
 const JobType = new GraphQLObjectType({
     name: "Job",
     fields: () => ({
@@ -43,6 +45,7 @@ const JobType = new GraphQLObjectType({
     }),
 });
 
+// Type for a job seeker
 const JobSeekerType = new GraphQLObjectType({
     name: "JobSeeker",
     fields: () => ({
@@ -65,6 +68,7 @@ const JobSeekerType = new GraphQLObjectType({
     }),
 });
 
+// Type of an experience in the job seekers profile
 const ExperienceType = new GraphQLObjectType({
     name: "Experience",
     fields: () => ({
@@ -84,6 +88,7 @@ const ExperienceType = new GraphQLObjectType({
     }),
 });
 
+// Type for an employer
 const EmployerType = new GraphQLObjectType({
     name: "Employer",
     fields: () => ({
@@ -101,6 +106,7 @@ const EmployerType = new GraphQLObjectType({
     }),
 });
 
+// Root Query of GraphQL
 const RootQuery = new GraphQLObjectType({
     name: "RootQueryType",
     fields: {
@@ -157,6 +163,7 @@ const RootQuery = new GraphQLObjectType({
         jobs: {
             type: new GraphQLList(JobType),
             resolve(parent, args) {
+                // get data from DB
                 return Job.find({});
             },
         },
@@ -167,6 +174,7 @@ const RootQuery = new GraphQLObjectType({
                 location: { type: GraphQLString },
             },
             resolve(parent, args) {
+                // get data from DB
                 return Job.find({
                     title: new RegExp(args.jobTitle, "i"),
                     location: new RegExp(args.location, "i"),
@@ -180,6 +188,7 @@ const RootQuery = new GraphQLObjectType({
                 employeeTitle: { type: GraphQLString },
             },
             resolve(parent, args) {
+                // get data from DB
                 return JobSeeker.find({
                     name: new RegExp(args.employeeName, "i"),
                     title: new RegExp(args.employeeTitle, "i"),
@@ -189,12 +198,14 @@ const RootQuery = new GraphQLObjectType({
         jobSeekers: {
             type: new GraphQLList(JobSeekerType),
             resolve(parent, args) {
+                // get data from DB
                 return JobSeeker.find({});
             },
         },
     },
 });
 
+// GraphQL Mutations
 const Mutation = new GraphQLObjectType({
     name: "Mutation",
     fields: {
@@ -217,6 +228,7 @@ const Mutation = new GraphQLObjectType({
                 employerId: { type: new GraphQLNonNull(GraphQLString) },
             },
             resolve(parent, args) {
+                // Job
                 let job = new Job({
                     title: args.title,
                     company: args.company,
@@ -234,6 +246,7 @@ const Mutation = new GraphQLObjectType({
                     employerId: args.employerId,
                 });
 
+                // Save new job in DB
                 return job.save();
             },
         },
@@ -241,31 +254,21 @@ const Mutation = new GraphQLObjectType({
             type: JobSeekerType,
             args: {
                 name: { type: new GraphQLNonNull(GraphQLString) },
-                // title: { type: new GraphQLNonNull(GraphQLString) },
                 email: { type: new GraphQLNonNull(GraphQLString) },
                 password: { type: new GraphQLNonNull(GraphQLString) },
                 phone: { type: GraphQLString },
-                // image: { type: GraphQLString },
-                // location: { type: GraphQLString },
-                // summary: { type: GraphQLString },
-                // experience: { type: GraphQLList(GraphQLString) },
-                // skills: {
-                //     type: GraphQLList(GraphQLString),
-                // },
             },
             resolve(parent, args) {
+                // Job seeker
                 let jobSeeker = new JobSeeker({
                     name: args.name,
                     title: args.title,
                     email: args.email,
                     password: args.password,
                     phone: args.phone,
-                    // image: args.image,
-                    // location: args.location,
-                    // summary: args.summary,
-                    // experience: args.experience,
-                    // skills: args.skills,
                 });
+
+                // Save new job seeker in DB
                 return jobSeeker.save();
             },
         },
@@ -278,31 +281,30 @@ const Mutation = new GraphQLObjectType({
                 phone: { type: new GraphQLNonNull(GraphQLString) },
             },
             resolve(parent, args) {
-                console.log(parent);
+                // Employer
                 let employer = new Employer({
                     name: args.name,
                     email: args.email,
                     password: args.password,
                     phone: args.phone,
                 });
-
+                // Save new employer in DB
                 return employer.save();
             },
         },
         updateJobSeeker: {
             type: JobSeekerType,
             args: {
-                id: { type: GraphQLString },
+                id: { type: new GraphQLNonNull(GraphQLString) },
                 title: { type: new GraphQLNonNull(GraphQLString) },
-                phone: { type: GraphQLString },
-                image: { type: GraphQLString },
-                location: { type: GraphQLString },
-                summary: { type: GraphQLString },
-                skills: {
-                    type: GraphQLList(GraphQLString),
-                },
+                phone: { type: new GraphQLNonNull(GraphQLString) },
+                image: { type: new GraphQLNonNull(GraphQLString) },
+                location: { type: new GraphQLNonNull(GraphQLString) },
+                summary: { type: new GraphQLNonNull(GraphQLString) },
+                skills: { type: new GraphQLNonNull(GraphQLString) },
             },
             resolve(parent, args) {
+                // Edit job seeker in DB
                 const jobSeeker = JobSeeker.findByIdAndUpdate(
                     args.id,
                     {
@@ -310,7 +312,7 @@ const Mutation = new GraphQLObjectType({
                         phone: args.phone,
                         image: args.image,
                         location: args.location,
-                        skills: args.skills,
+                        skills: args.skills.split(","),
                         experience: args.experience,
                         summary: args.summary,
                     },
@@ -323,6 +325,7 @@ const Mutation = new GraphQLObjectType({
     },
 });
 
+// Export Root Query and Mutation
 module.exports = new graphql.GraphQLSchema({
     query: RootQuery,
     mutation: Mutation,

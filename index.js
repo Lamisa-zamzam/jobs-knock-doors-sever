@@ -1,16 +1,28 @@
+// Require env variables
 require("dotenv").config({ path: "./.env" });
+
+// Express -- node framework
 const express = require("express");
-const errorHandler = require("./middleware/error");
+// CORS = Cross Origin Resource Sharing
 const cors = require("cors");
+// Mongoose
 const mongoose = require("mongoose");
 
+// Custom error handler
+const errorHandler = require("./middleware/error");
+
+// GraphQL
 const { graphqlHTTP } = require("express-graphql");
+// GraphQL Schema
 const schema = require("./schema/schema");
 
+// Initialize express app
 const app = express();
 
+// Use CORS
 app.use(cors());
 
+// Connect to MongoDB database
 const connectDB = async () => {
     try {
         await mongoose.connect(
@@ -27,12 +39,9 @@ const connectDB = async () => {
         );
     } catch (err) {
         console.log(err);
+        server.close(() => process.exit(1));
     }
 };
-
-mongoose.connection.once("open", () => {
-    console.log("MongoDB connected");
-});
 
 // Connect DB
 connectDB();
@@ -40,10 +49,7 @@ connectDB();
 // for parsing the req.body
 app.use(express.json());
 
-// app.use("/api/auth", require("./routes/auth"));
-
-// app.use("/api/private", require("./routes/private"));
-
+// Super Charged Graphql Endpoint -- only endpoint in the app
 app.use(
     "/graphql",
     graphqlHTTP({
@@ -52,6 +58,7 @@ app.use(
     })
 );
 
+// Root query
 app.get("/", (req, res) => {
     res.send("Hello World!");
 });
@@ -59,6 +66,7 @@ app.get("/", (req, res) => {
 // Error Handle
 app.use(errorHandler);
 
+// Server
 const server = app.listen(process.env.PORT || 5000, () => {
     console.log(`Example app listening`);
 });

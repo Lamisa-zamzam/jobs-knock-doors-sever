@@ -1,8 +1,8 @@
+// Dependencies
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 
+// Schema for employers
 const employerSchema = new Schema({
     name: String,
     email: { type: String, required: [true, "Please provide an email."] },
@@ -13,4 +13,5 @@ const employerSchema = new Schema({
     phone: String,
 });
 
+// Export Employer model
 module.exports = mongoose.model("Employer", employerSchema);

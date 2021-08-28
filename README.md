@@ -7,20 +7,20 @@ Welcome to my GraphQL server!!! Here you can request a number of data which is b
 ### Root Query
 
 -   JobSeeker : returns the job seeker with the email and password provided in the args
--   JobSeekerById : returns the job seeker with the email and password provided in the args
--   employer
--   job
--   jobs
--   jobSearch
--   employeeSearch
--   jobSeekers
+-   JobSeekerById : returns the job seeker with the id provided in the args
+-   employer: returns the employer with the email and password provided in the args
+-   job : returns the job with the id provided in the args
+-   jobs: returns all jobs
+-   jobSearch: returns the job with the title and location provided in the args
+-   employeeSearch: returns the employee with the name and title provided in the args
+-   jobSeekers: returns all jobSeekers
 
 ### Mutations
 
--   addJob
--   addJobSeeker
--   addEmployer
--   updateJobSeeker
+-   addJob: saves the job info provided in the args in DB
+-   addJobSeeker: saves the job seeker info provided in the args in DB
+-   addEmployer: saves the employer info provided in the args in DB
+-   updateJobSeeker: updates the job seeker info as provided in the args in DB
 
 My project includes:
 

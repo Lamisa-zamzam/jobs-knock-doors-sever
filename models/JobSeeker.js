@@ -1,8 +1,8 @@
+// Dependencies
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 
+// Schema for a job seeker
 const jobSeekerSchema = new Schema({
     name: String,
     title: String,
@@ -22,4 +22,5 @@ const jobSeekerSchema = new Schema({
     ],
 });
 
+// Export Job Seeker model
 module.exports = mongoose.model("JobSeeker", jobSeekerSchema);
